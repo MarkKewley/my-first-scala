@@ -5,22 +5,37 @@ import java.text.DateFormat._
 import java.util
 
 /**
-  * Created by markkewley on 2/24/17.
+  * Just a playground utilizing multiple features of Scala
   */
 object HelloWorld {
-  type Function = String => (Int, String) => Unit
+  type Function = String => () => Unit
   type Environment = String => Int
 
+  // A more concrete way imo of using a Map by using type which is essentially functions!
+  val otherFunctions: Function = {
+    case "func1" => () => println("FunctionOne")
+    case "func2" => () => println("FunctionTwo")
+  }
+
+  // Define a function map utilizing Hashmap, we can see that functions are objects too
   val functionMap = new util.HashMap[String, (Int, String) => Unit]
   functionMap.put("func1", timeFlies)
   functionMap.put("func2", (arg1, arg2) => println(s"Another random func with $arg1 and $arg2"))
 
+  /**
+    * Print out the current timestamp in French, this is
+    * just an example of utilizing Java packages in scala
+    */
   def frenchDate(): Unit = {
     val now = new Date()
     val df = getDateInstance(LONG, Locale.FRENCH)
     println(df format now)
   }
 
+  /**
+    * Every second execute either the callback or something from the
+    * functionMap
+    */
   def oncePerSecond(callback: (Int, String) => Unit): Unit = {
     var counter = 0
     while (counter != 6) {
@@ -34,20 +49,29 @@ object HelloWorld {
         functionMap.get("func1")(counter, "Ermagawwd")
       }
 
-      counter match {
-        case 0 => println("Yes")
-      }
-
       counter += 1
       Thread sleep 1000
     }
   }
 
+  /**
+    * The callback, this could be an anonymous function as well
+    */
   def timeFlies(counter: Int, random: String): Unit = {
     println(s"time flies like an arrow...$counter")
     println(s"Random Message: $random")
   }
 
+  /**
+    * Execute the Functions type here
+    */
+  def executeFunction(func: String): Unit = {
+    otherFunctions(func)()
+  }
+
+  /**
+    * Just create and print out a ComplexNumber using toString and getters
+    */
   def printComplexNumber(real: Double, imaginary: Double): Unit = {
     val complexNumber = new ComplexNumber(real, imaginary)
 //    println("ComplexNumber -> real: " + complexNumber.getReal() + " imaginary: " + complexNumber.getImaginary())
@@ -56,18 +80,30 @@ object HelloWorld {
     println(complexNumber)
   }
 
+  /**
+    * Using Pattern Matching to match the correct Tree with
+    * how to execute the eval function.
+    */
   def eval(t: Tree, env: Environment): Int = t match {
     case Sum(l, r) => eval(l, env) + eval(r, env)
     case Var(n) => env(n)
     case Const(v) => v
   }
 
+  /**
+    * Using Pattern Matching to match the correct Tree with
+    * how to execute the derive function.
+    */
   def derive(t: Tree, v: String): Tree = t match {
     case Sum(l,r) => Sum(derive(l, v), derive(r, v))
     case Var(n) if v == n => Const(1)
-    case _ => Const(0)
+    case _ => Const(0) // wildcard, match anything else
   }
 
+  /**
+    * Actual implementation of how the Tree works using all of the functions
+    * defined here.
+    */
   def doSomeTreeStuff(): Unit = {
     val exp: Tree = Sum(Sum(Var("x"), Var("x")), Sum(Const(7), Var("y")))
     val env: Environment = {
@@ -81,6 +117,10 @@ object HelloWorld {
     println("Derivative relative to y:\n" + derive(exp, "y"))
   }
 
+  /**
+    * Alternate way using the eval/derive defined within the Abstract class
+    * of Tree
+    */
   def doSomeAnotherTreeStuff(): Unit = {
     val exp: AnotherTree = AnotherSum(AnotherSum(AnotherVar("x"), AnotherVar("x")), AnotherSum(AnotherConst(7), AnotherVar("y")))
     val env: Environment = {
@@ -94,13 +134,20 @@ object HelloWorld {
     println("Derivative relative to y:\n" + exp.derive(exp, "y"))
   }
 
+  /**
+    * The main source of execution
+    */
   def main(args: Array[String]): Unit = {
     frenchDate()
+
     printComplexNumber(2.0, 5.2)
+
     oncePerSecond(timeFlies)
+
+    executeFunction("func1")
+    executeFunction("func2")
+
     doSomeTreeStuff()
-    println("ANOTHER TREE -----")
-    doSomeAnotherTreeStuff()
   }
 
 }

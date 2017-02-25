@@ -1,7 +1,14 @@
 package myfirst
 
 /**
-  * Created by markkewley on 2/25/17.
+  * Implementation using case classes of an
+  * arithmetic structure, basic (x + x) + (7 + x) as an
+  * example.
+  *
+  * Case classes provide getter/equals/hashCode and a default toString, I believe
+  * you have to specify 'var' within the parameters.
+  *
+  * They also don't require a new keyword
   */
 abstract class Tree
 case class Sum(var l: Tree, var r: Tree) extends Tree
