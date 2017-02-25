@@ -27,7 +27,7 @@ object HelloWorld {
     * just an example of utilizing Java packages in scala
     */
   def frenchDate(): Unit = {
-    val now = new Date()
+    val now = new java.util.Date
     val df = getDateInstance(LONG, Locale.FRENCH)
     println(df format now)
   }
@@ -135,6 +135,15 @@ object HelloWorld {
   }
 
   /**
+    * Using Generics, similar to Java
+    */
+  def doSomeReferences(): Unit = {
+    val cell = new Reference[Int]
+    cell.set(13)
+    println("Reference contains the half of " + (cell.get * 2))
+  }
+
+  /**
     * The main source of execution
     */
   def main(args: Array[String]): Unit = {
@@ -148,6 +157,8 @@ object HelloWorld {
     executeFunction("func2")
 
     doSomeTreeStuff()
+
+    doSomeReferences()
   }
 
 }
